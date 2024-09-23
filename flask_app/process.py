@@ -1,4 +1,4 @@
-import openai 
+# import openai
 import re
 import fitz  # PyMuPDF PDF READ
 import os
@@ -49,7 +49,19 @@ def read_png(file_path):
 
 def extract_data_with_llama(textOfCV):
     llm = Ollama(model="llama3.1:latest", json_mode=True)
-    prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  textOfCV + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
+    # prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  textOfCV + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
+    prompt = ("Based on the following text, please collect the account owner's transaction data and format them in "
+              "JSON format. The data must include date, description, and amount. If any data is not available, "
+              "do not add the transaction. "
+              "Example data: "
+              "12/06/23 BKOFAMERICA ATM 12/06 #000004881 DEPOSIT WESTVIEW BALTIMORE MD 100.00"
+              "12/11/23 BKOFAMERICA ATM 12/09 #000005866 DEPOSIT WESTVIEW BALTIMORE MD 200.00"
+              "12/29/23 BKOFAMERICA ATM 12/29 #000002272 DEPOSIT WESTVIEW  BALTIMORE MD 100.00"
+              "Returns: {transactions: [{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000004881 DEPOSIT WESTVIEW BALTIMORE MD, amount: 100.00 },"
+              "{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000005866 DEPOSIT WESTVIEW BALTIMORE MD, amount: 200.00 },"
+              "{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000002272 DEPOSIT WESTVIEW BALTIMORE MD, amount: 100.00 }, {...} ]}"
+              "The text is:" +  textOfCV +
+              "The response contains only the JSON structure.")
 
 #     prompt = (
 #  "Based on the following text, please collect the account owner's transaction data and format them in JSON format."
@@ -72,7 +84,7 @@ def extract_data_with_llama(textOfCV):
     #print(result)
     return result
 
-# def test_prompt(text): 
+# def test_prompt(text):
 #     prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  text + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
 #     response = ollama.chat(model='llama3.1', messages=[
 #         {
@@ -81,7 +93,7 @@ def extract_data_with_llama(textOfCV):
 #         },
 #     ])
 #     print("pass llm load")
-
+#
 #     prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  text + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
 #     print(response)
 #     # result = llm.invoke(prompt)
@@ -121,7 +133,7 @@ def process_document(file_path):
         print("call llama")
         # response = test_prompt(textOfCV)
         print(response)
-        f = open('output.csv', 'a')
+        f = open('output.csv', 'w')
         writer = csv.writer(f)
         writer.writerows(response)
         # data = json.loads(response)
@@ -148,6 +160,6 @@ def pdf_convert(document):
         print(f"An error occurred: {e}")
 
 
-process_document("uploads/testpdf.pdf")
+process_document("uploads/testpdf2.pdf")
 # print(pytesseract.image_to_string(Image.open("uploads/testpdf.pdf")))
 
