@@ -51,42 +51,27 @@ def extract_data_with_llama(textOfCV):
     llm = Ollama(model="llama3.1:latest", json_mode=True)
     prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  textOfCV + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
 
-#     prompt = (
-#  "Based on the following text, please collect the account owner's transaction data and format them in JSON format."
-#  "The data must include date, description, and amount. If any data is not available, "
-#  "do not add the transaction. The text is: \"" + textOfCV + "\"\n"
-#  "Format should be:"
-#  "\n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...}"
-# #  " \"Date\": \"<DATE>\",\n"
-# #  " \"Description\": \"<DESCRIPTION>\",\n"
-# #  " \"Amount\": \"<AMOUNT>\",\n"
-# #  "},{...},{...}"
-# #  "{Date: <DATE>,\n"
-# #  "Description: <DESCRIPTION>,\n"
-# #  " Amount: <AMOUNT>,\n"
-# #  "},{...},{...}"
-# #  "Using double quotes for the '{'\"Key\": \"Value\"'}' pairs. "
-#  "The response contains only the JSON structure."
-#     )
+    prompt = (
+        "<|begin_of_text|><|start_header_id|>system<|end_header_id|>"
+        "You are a bookkeeping assistant, please collect the account owner's transaction data and format them in JSON format."
+        "The data must include date, description, and amount. If any data is not available, do not add the transaction."
+        "Your response contains only the JSON structure."
+        "<|eot_id|><|start_header_id|>user<|end_header_id|>"
+        "12/06/23 BKOFAMERICA ATM 12/06 #000004881 DEPOSIT WESTVIEW BALTIMORE MD 100.00"
+        "12/11/23 BKOFAMERICA ATM 12/09 #000005866 DEPOSIT WESTVIEW BALTIMORE MD 200.00"
+        "12/29/23 BKOFAMERICA ATM 12/29 #000002272 DEPOSIT WESTVIEW  BALTIMORE MD 100.00"
+        "<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+        "{transactions: [{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000004881 DEPOSIT WESTVIEW BALTIMORE MD, amount: 100.00 },"
+        "{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000005866 DEPOSIT WESTVIEW BALTIMORE MD, amount: 200.00 },"
+        "{date: 12/06/23, description: BKOFAMERICA ATM 12/06 #000002272 DEPOSIT WESTVIEW BALTIMORE MD, amount: 100.00 }, {...} ]}"
+        "<|eot_id|><|start_header_id|>user<|end_header_id|>"
+        "%s"
+        "<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
+        % textOfCV
+    )
     result = llm.complete(prompt)
     #print(result)
     return result
-
-# def test_prompt(text): 
-#     prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  text + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
-#     response = ollama.chat(model='llama3.1', messages=[
-#         {
-#             'role': 'assistant',
-#             'content': prompt,
-#         },
-#     ])
-#     print("pass llm load")
-
-#     prompt = ("Based on the following text, please collect the account owner's transaction data and format them in JSON format. The data must include date, description, and amount. If any data is not available, do not add the transaction. The text is:" +  text + " \n{ Date: <DATE>, Description: <DESCRIPTION>, Amount: <AMOUNT> } \n,{...},{...} The response contains only the JSON structure.")
-#     print(response)
-#     # result = llm.invoke(prompt)
-#     #print(result)
-#     return response
 
 
 def post_process(response_text):
