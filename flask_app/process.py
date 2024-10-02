@@ -16,6 +16,7 @@ from PIL import Image
 
 CONVERTED_FOLDER =  'converted'
 
+# load tesseract location into program. 
 pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 
@@ -92,23 +93,28 @@ def post_process(response_text):
 
 def process_document(file_path):
     try:
-        print(f"Processing {file_path}")
-        pdf_convert(file_path) #converts page
+        pdf_convert(file_path) #converts page to PNG
         # textOfCV = read_pdf(file_path)
-        files = os.listdir(CONVERTED_FOLDER)
+        files = os.listdir(CONVERTED_FOLDER) # Gets PNG files
         for filename in files: 
-            file_path = os.path.join(CONVERTED_FOLDER, filename)
+            file_path = os.path.join(CONVERTED_FOLDER, filename) # create path name for loading
             if os.path.exists(file_path):
                 print("reading png")
-                textOfCV = read_png(file_path)
+                textOfCV = read_png(file_path) # Extract text from PNG
                 print(textOfCV)
-        response = extract_data_with_llama(textOfCV)
+        response = extract_data_with_llama(textOfCV) # Call Llama to read text with prompt, returns json. 
         print("call llama")
         # response = test_prompt(textOfCV)
-        print(response)
+        print(response.text)
+        text = response.text
         f = open('output.csv', 'a')
         writer = csv.writer(f)
-        writer.writerows(response)
+        writer.writerows(text) # writes rows to CSV output
+
+# double quotes are for the CMD reader... to show accurately for the reader, not an app to use. 
+
+
+        print(type(response.))
         # data = json.loads(response)
         # print(data)
         # df = pd.DataFrame([response])
